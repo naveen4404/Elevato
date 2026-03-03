@@ -1,6 +1,7 @@
 package com.linkedin.linkedin.features.authentication.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.linkedin.linkedin.features.feed.model.Comment;
 import com.linkedin.linkedin.features.feed.model.Post;
 import jakarta.persistence.*;
 
@@ -43,6 +44,13 @@ public class AuthenticationUser {
             orphanRemoval = true
     )
     private List<Post> posts;
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Comment> comments;
 
     public AuthenticationUser() {
     }

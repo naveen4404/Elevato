@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "posts")
@@ -36,6 +37,12 @@ public class Post {
     )
     private Set<AuthenticationUser> likes;
 
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Comment> comments;
 
     @PreUpdate
     public void changeUpdatedAt(){

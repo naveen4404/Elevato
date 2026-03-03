@@ -4,9 +4,12 @@ import com.linkedin.linkedin.exception.ForbiddenException;
 import com.linkedin.linkedin.exception.ResourceNotFoundException;
 import com.linkedin.linkedin.features.authentication.model.AuthenticationUser;
 import com.linkedin.linkedin.features.authentication.repository.AuthenticationUserRepository;
+import com.linkedin.linkedin.features.feed.dto.CommentDto;
 import com.linkedin.linkedin.features.feed.dto.PostDto;
 import com.linkedin.linkedin.features.feed.dto.PostMapper;
+import com.linkedin.linkedin.features.feed.model.Comment;
 import com.linkedin.linkedin.features.feed.model.Post;
+import com.linkedin.linkedin.features.feed.repository.CommentRepository;
 import com.linkedin.linkedin.features.feed.repository.PostRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +23,12 @@ public class FeedService {
     Logger logger = LoggerFactory.getLogger(FeedService.class);
     private final PostRepository postRepository;
     private final AuthenticationUserRepository authenticationUserRepository;
+    private final CommentRepository commentRepository;
 
-    public FeedService(PostRepository postRepository, AuthenticationUserRepository authenticationUserRepository) {
+    public FeedService(PostRepository postRepository, AuthenticationUserRepository authenticationUserRepository, CommentRepository commentRepository) {
         this.postRepository = postRepository;
         this.authenticationUserRepository = authenticationUserRepository;
+        this.commentRepository = commentRepository;
     }
 
     public PostDto createPost(Long id, PostDto post) {
@@ -88,5 +93,31 @@ public class FeedService {
             post.getLikes().add(user);
         }
         return postRepository.save(post);
+    }
+
+    public Comment addComment(Long userId, Long postId, CommentDto comment) {
+        AuthenticationUser user = authenticationUserRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User not found"));
+        Post post = postRepository.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post not found"));
+        Comment cmt = new Comment(post, user, comment.getContent());
+        return commentRepository.save(cmt);
+    }
+
+    public Comment editComment(Long userId, Long commentId, CommentDto comment) {
+        AuthenticationUser user = authenticationUserRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User not found"));
+        Comment cmt = commentRepository.findById(commentId).orElseThrow(()->new ResourceNotFoundException("Comment not found"));
+        if(!cmt.getUser().equals(user)){
+            throw new ForbiddenException("User is not allowed to edit this comment");
+        }
+        cmt.setContent(comment.getContent());
+        return commentRepository.save(cmt);
+    }
+
+    public void deleteComment(Long userId, Long commentId) {
+        AuthenticationUser user = authenticationUserRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User not found"));
+        Comment cmt = commentRepository.findById(commentId).orElseThrow(()->new ResourceNotFoundException("Comment not found"));
+        if(!cmt.getUser().equals(user)){
+            throw new ForbiddenException("User is not allowed to delete this comment");
+        }
+        commentRepository.delete(cmt);
     }
 }

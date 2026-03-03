@@ -1,7 +1,9 @@
 package com.linkedin.linkedin.features.feed.controller;
 
 import com.linkedin.linkedin.features.authentication.model.AuthenticationUser;
+import com.linkedin.linkedin.features.feed.dto.CommentDto;
 import com.linkedin.linkedin.features.feed.dto.PostDto;
+import com.linkedin.linkedin.features.feed.model.Comment;
 import com.linkedin.linkedin.features.feed.model.Post;
 import com.linkedin.linkedin.features.feed.repository.PostRepository;
 import com.linkedin.linkedin.features.feed.service.FeedService;
@@ -66,5 +68,29 @@ public class FeedController {
     public ResponseEntity<Post> likePost(@RequestAttribute("authenticatedUser") AuthenticationUser user, @PathVariable Long postId){
         return ResponseEntity.ok(feedService.likePost(user.getId(),postId));
     }
+
+    @PostMapping("/posts/{postId}/comments")
+    public ResponseEntity<Comment> addComment(@RequestAttribute("authenticatedUser") AuthenticationUser user,
+                                              @PathVariable Long postId,
+                                              @RequestBody CommentDto comment){
+        Comment addedComment = feedService.addComment(user.getId(), postId, comment);
+        return ResponseEntity.ok(addedComment);
+    }
+
+    @PutMapping("/comments/{commentId}")
+    public ResponseEntity<Comment> editComment(@RequestAttribute("authenticatedUser") AuthenticationUser user,
+                                              @PathVariable Long commentId,
+                                              @RequestBody CommentDto comment){
+        Comment editedComment = feedService.editComment(user.getId(), commentId, comment);
+        return ResponseEntity.ok(editedComment);
+    }
+
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(@RequestAttribute("authenticatedUser") AuthenticationUser user,
+                                               @PathVariable Long commentId){
+        feedService.deleteComment(user.getId(), commentId);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
