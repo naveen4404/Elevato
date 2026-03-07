@@ -80,14 +80,14 @@ public class AuthenticationController {
                                                  @RequestParam(required = false) String firstName,
                                                  @RequestParam(required = false) String lastName,
                                                  @RequestParam(required = false) String location,
-                                                 @RequestParam(required = false) String company,
-                                                 @RequestParam(required = false) String position
+                                                 @RequestParam(required = false) String college
+
                                                  ){
         if(!user.getId().equals(id)){
             throw  new ForbiddenException("Your are not authorized to do this");
         }
 
-        return ResponseEntity.ok(authenticationService.updateUserProfile(id, firstName, lastName,location,company,position));
+        return ResponseEntity.ok(authenticationService.updateUserProfile(id, firstName, lastName,location,college));
     }
 
 }

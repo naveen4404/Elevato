@@ -1,70 +1,46 @@
 import { useState, type SubmitEvent } from "react";
-import { Box } from "../../components/box/Box";
-import { Button } from "../../components/button/Button";
-import { Input } from "../../components/input/Input";
-import { Layout } from "../../components/layout/Layout";
-import classes from "./EmailVerification.module.scss";
 import { useNavigate } from "react-router-dom";
+import { Box } from "../../components/box/Box";
+import { Button } from "../../../../components/button/Button";
+import { Input } from "../../../../components/input/Input";
+import classes from "./EmailVerification.module.scss";
+import { request } from "../../../../utils/api";
+import { useAuthentication } from "../../contexts/AuthenticationContextProvider";
 export function EmailVerification() {
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { user, setUser } = useAuthentication();
   const sendEmailVerificationToken = async () => {
     setMessage("");
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        import.meta.env.VITE_API_URL +
-          "/api/v1/authentication/send-email-verification-token",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
-      );
-      if (response.ok) {
+    await request<void>({
+      endpoint: "/api/v1/authentication/send-email-verification-token",
+      onSuccess: () => {
         setErrorMessage("");
         setMessage("Code sent successfully. Please check your email.");
-        return;
-      }
-      const { message } = await response.json();
-      setErrorMessage(message);
-    } catch (e) {
-      console.log(e);
-      setErrorMessage("Something went wrong, please try again");
-    } finally {
-      setIsLoading(false);
-    }
+      },
+      onFailure: (message) => {
+        setErrorMessage(message);
+      },
+    });
+    setIsLoading(false);
   };
 
   const validateEmail = async (code: string) => {
     setMessage("");
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        import.meta.env.VITE_API_URL +
-          `/api/v1/authentication/validate-email-verification-token?token=${code}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
-      );
-      if (response.ok) {
+    await request<void>({
+      endpoint: `/api/v1/authentication/validate-email-verification-token?token=${code}`,
+      onSuccess: () => {
         setErrorMessage("");
+        setUser({ ...user!, emailVerified: true });
         navigate("/");
-        return;
-      }
-      const { message } = await response.json();
-      setErrorMessage(message);
-    } catch (e) {
-      console.log(e);
-      setErrorMessage("Something went wrong, please tyy again.");
-    } finally {
-      setIsLoading(false);
-    }
+      },
+      onFailure: (message) => {
+        setErrorMessage(message);
+      },
+    });
+    setIsLoading(false);
   };
 
   const handleValidateEmail = async (e: SubmitEvent<HTMLFormElement>) => {
@@ -74,7 +50,7 @@ export function EmailVerification() {
   };
 
   return (
-    <Layout className={classes.root}>
+    <div className={classes.root}>
       <Box>
         <h1>Verify your email</h1>
         <p>
@@ -104,6 +80,6 @@ export function EmailVerification() {
           </Button>
         </form>
       </Box>
-    </Layout>
+    </div>
   );
 }

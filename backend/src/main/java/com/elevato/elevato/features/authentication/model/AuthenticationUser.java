@@ -33,8 +33,7 @@ public class AuthenticationUser {
     private String firstName = null;
     private String lastName = null;
     private String location = null;
-    private String company = null;
-    private String position = null;
+    private String college = null;
     private Boolean profileComplete = false;
     private String profilePicture = null;
     @JsonIgnore
@@ -45,6 +44,7 @@ public class AuthenticationUser {
     )
     private List<Post> posts;
 
+    @JsonIgnore
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL,
@@ -126,7 +126,7 @@ public class AuthenticationUser {
     }
 
     private void updateProfileComplete(){
-        this.profileComplete = firstName!=null && lastName!=null && location!=null && company!=null && position!=null;
+        this.profileComplete = firstName!=null && lastName!=null && location!=null && college!=null;
     }
 
     public String getFirstName() {
@@ -156,15 +156,6 @@ public class AuthenticationUser {
         updateProfileComplete();
     }
 
-    public String getCompany() {
-        return company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
-        updateProfileComplete();
-    }
-
     public Boolean getProfileComplete() {
         return profileComplete;
     }
@@ -189,11 +180,20 @@ public class AuthenticationUser {
         this.profilePicture = profilePicture;
     }
 
-    public String getPosition() {
-        return position;
+    public String getCollege() {
+        return college;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setCollege(String college) {
+        this.college = college;
+        updateProfileComplete();
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

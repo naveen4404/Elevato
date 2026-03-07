@@ -1,6 +1,7 @@
 package com.elevato.elevato.features.feed.model;
 
 import com.elevato.elevato.features.authentication.model.AuthenticationUser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -33,6 +34,8 @@ public class Post {
         joinColumns = @JoinColumn(name = "post_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
+
+    @JsonIgnore
     private Set<AuthenticationUser> likes;
 
     @OneToMany(
@@ -40,6 +43,8 @@ public class Post {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+
+    @JsonIgnore
     private List<Comment> comments;
 
     @PreUpdate
@@ -114,5 +119,13 @@ public class Post {
 
     public void setLikes(Set<AuthenticationUser> likes) {
         this.likes = likes;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

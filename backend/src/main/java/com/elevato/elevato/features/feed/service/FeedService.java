@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class FeedService {
@@ -30,14 +31,13 @@ public class FeedService {
         this.commentRepository = commentRepository;
     }
 
-    public PostDto createPost(Long id, PostDto post) {
+    public Post createPost(Long id, PostDto post) {
         AuthenticationUser user = authenticationUserRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found") );
         Post newPost = new Post(post.getContent(), post.getPicture(), user);
-        postRepository.save(newPost);
-        return PostMapper.toDto(newPost);
+       return postRepository.save(newPost);
     }
 
-    public PostDto editPost(Long userId, PostDto post, Long postId) {
+    public Post editPost(Long userId, PostDto post, Long postId) {
 
         Post oldPost = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         AuthenticationUser user = authenticationUserRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -47,25 +47,20 @@ public class FeedService {
         }
         oldPost.setContent(post.getContent());
         oldPost.setPicture(post.getPicture());
-        return PostMapper.toDto(postRepository.save(oldPost));
+        return postRepository.save(oldPost);
     }
 
 
-    public List<PostDto> getFeed(Long id) {
-        List<Post> posts = postRepository.findPostsNotByUser(id);
-        List<PostDto> feed = posts.stream().map((post) -> PostMapper.toDto(post)).toList();
-        return feed;
+    public List<Post> getFeed(Long id) {
+        return postRepository.findPostsNotByUser(id);
     }
 
-    public List<PostDto> getAllPosts() {
-        List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
-        List<PostDto> feed = posts.stream().map((post) -> PostMapper.toDto(post)).toList();
-        return feed;
+    public List<Post> getAllPosts() {
+        return postRepository.findAllByOrderByCreatedAtDesc();
     }
 
-    public PostDto getPostById(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post not found"));
-        return PostMapper.toDto(post);
+    public Post getPostById(Long postId) {
+        return postRepository.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post not found"));
     }
 
     public void deletePost(Long userId, Long postId) {
@@ -77,10 +72,9 @@ public class FeedService {
         postRepository.delete(post);
     }
 
-    public List<PostDto> getAllPostsByAuthorId(Long authorId) {
+    public List<Post> getAllPostsByAuthorId(Long authorId) {
         AuthenticationUser user = authenticationUserRepository.findById(authorId).orElseThrow(()->new ResourceNotFoundException("User not found"));
-        List<Post> posts = user.getPosts();
-        return posts.stream().map((post)-> PostMapper.toDto(post)).toList();
+        return user.getPosts();
     }
 
     public Post likePost(Long userId, Long postId) {
@@ -118,5 +112,15 @@ public class FeedService {
             throw new ForbiddenException("User is not allowed to delete this comment");
         }
         commentRepository.delete(cmt);
+    }
+
+    public List<Comment> getComments( Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post not found"));
+        return post.getComments();
+    }
+
+    public Set<AuthenticationUser> getLikes(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post not found"));
+        return post.getLikes();
     }
 }

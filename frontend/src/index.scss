@@ -1,33 +1,38 @@
 :root {
-    --primary-color: #0a66c2;
-    --primary-color-dark: #0a4182;
-
+  --primary-color: #0a66c2;
+  --primary-color-dark: #0a4182;
 }
 
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font : inherit;
-    color: inherit;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font: inherit;
+  color: inherit;
 }
 
 html {
-    font-family: "Poppins", sans-serif;
+  font-family: "Poppins", sans-serif;
+  background-color: #efece8;
 }
 
-img{
-    max-width: 100%;
-    display: block;
+img {
+  max-width: 100%;
+  display: block;
+  object-fit: cover;
 }
 
-button{
-    outline: none;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
+button {
+  outline: none;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
 }
 
-a{
-    text-decoration: none;
+a {
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
 }

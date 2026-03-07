@@ -1,12 +1,11 @@
+import { useState, type SubmitEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Box } from "../../components/box/Box";
-import { Button } from "../../components/button/Button";
-import { Input } from "../../components/input/Input";
-import { Layout } from "../../components/layout/Layout";
-import classes from "./Login.module.scss";
+import { Button } from "../../../../components/button/Button";
+import { Input } from "../../../../components/input/Input";
 import { Seperator } from "../../components/seperator/Seperator";
-import { useState, type SubmitEvent } from "react";
 import { useAuthentication } from "../../contexts/AuthenticationContextProvider";
+import classes from "./Login.module.scss";
 
 export function Login() {
   const [errorMessage, setErrorMessage] = useState("");
@@ -35,7 +34,7 @@ export function Login() {
   };
 
   return (
-    <Layout className={classes.root}>
+    <div className={classes.root}>
       <Box>
         <h1>Sign in</h1>
         <p>Stay updated on your professional world.</p>
@@ -44,12 +43,14 @@ export function Login() {
             label="Email"
             type="email"
             id="email"
+            required
             onFocus={() => setErrorMessage("")}
           ></Input>
           <Input
             label="Password"
             type="password"
             id="password"
+            required
             onFocus={() => setErrorMessage("")}
           ></Input>
           {errorMessage && <div className={classes.error}>{errorMessage}</div>}
@@ -57,12 +58,14 @@ export function Login() {
             {isLoading ? "Signing in..." : "sign in"}
           </Button>
         </form>
-        <Link to="/request-password-reset">Forgot password?</Link>
+        <Link to="/authentication/request-password-reset">
+          Forgot password?
+        </Link>
       </Box>
       <Seperator>Or</Seperator>
       <div className={classes.register}>
-        New to Elevato? {<Link to="/signup">Join now</Link>}
+        New to Elevato? {<Link to="/authentication/signup">Join now</Link>}
       </div>
-    </Layout>
+    </div>
   );
 }

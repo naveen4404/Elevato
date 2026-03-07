@@ -6,7 +6,7 @@ plugins {
 
 group = "com.linkedin"
 version = "0.0.1-SNAPSHOT"
-description = "LinkedIn clone with spring boot"
+description = "Elevato backend API"
 
 java {
 	toolchain {

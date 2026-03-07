@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/feed")
@@ -22,20 +23,20 @@ public class FeedController {
     }
 
     @PostMapping("/posts")
-    public ResponseEntity<PostDto> createPost(@RequestAttribute("authenticatedUser")AuthenticationUser user, @RequestBody PostDto post){
-        PostDto createdPost = feedService.createPost(user.getId(), post);
+    public ResponseEntity<Post> createPost(@RequestAttribute("authenticatedUser")AuthenticationUser user, @RequestBody PostDto post){
+        Post createdPost = feedService.createPost(user.getId(), post);
         return ResponseEntity.created(null).body(createdPost);
     }
 
     @PutMapping("/posts/{postId}")
-    public ResponseEntity<PostDto> editPost(@RequestAttribute("authenticatedUser")AuthenticationUser user, @RequestBody PostDto post,@PathVariable Long postId){
-        PostDto editedPost = feedService.editPost(user.getId(),post,postId);
+    public ResponseEntity<Post> editPost(@RequestAttribute("authenticatedUser")AuthenticationUser user, @RequestBody PostDto post,@PathVariable Long postId){
+        Post editedPost = feedService.editPost(user.getId(),post,postId);
         return ResponseEntity.ok(editedPost);
     }
 
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<PostDto> getPostById(@PathVariable Long postId){
-        PostDto post = feedService.getPostById(postId);
+    public ResponseEntity<Post> getPostById(@PathVariable Long postId){
+        Post post = feedService.getPostById(postId);
         return ResponseEntity.ok(post);
     }
 
@@ -46,26 +47,31 @@ public class FeedController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostDto>> getFeed(@RequestAttribute("authenticatedUser")AuthenticationUser user){
-        List<PostDto> feed = feedService.getFeed(user.getId());
+    public ResponseEntity<List<Post>> getFeed(@RequestAttribute("authenticatedUser")AuthenticationUser user){
+        List<Post> feed = feedService.getFeed(user.getId());
         return ResponseEntity.ok(feed);
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostDto>> getAllPosts(){
-        List<PostDto> feed = feedService.getAllPosts();
+    public ResponseEntity<List<Post>> getAllPosts(){
+        List<Post> feed = feedService.getAllPosts();
         return ResponseEntity.ok(feed);
     }
 
     @GetMapping("/posts/user/{authorId}")
-    public ResponseEntity<List<PostDto>> getAllPostsOfAuthor(@PathVariable Long authorId){
-        List<PostDto> feed = feedService.getAllPostsByAuthorId(authorId);
+    public ResponseEntity<List<Post>> getAllPostsOfAuthor(@PathVariable Long authorId){
+        List<Post> feed = feedService.getAllPostsByAuthorId(authorId);
         return ResponseEntity.ok(feed);
     }
 
-    @PutMapping("/posts/{postId}/like")
+    @PutMapping("/posts/{postId}/likes")
     public ResponseEntity<Post> likePost(@RequestAttribute("authenticatedUser") AuthenticationUser user, @PathVariable Long postId){
         return ResponseEntity.ok(feedService.likePost(user.getId(),postId));
+    }
+
+    @GetMapping("/posts/{postId}/likes")
+    public ResponseEntity<Set<AuthenticationUser>> getLikes(@PathVariable Long postId){
+        return ResponseEntity.ok(feedService.getLikes(postId));
     }
 
     @PostMapping("/posts/{postId}/comments")
@@ -75,6 +81,14 @@ public class FeedController {
         Comment addedComment = feedService.addComment(user.getId(), postId, comment);
         return ResponseEntity.ok(addedComment);
     }
+
+    @GetMapping("/posts/{postId}/comments")
+    public ResponseEntity<List<Comment>> getComments(
+                                              @PathVariable Long postId){
+        List<Comment> comments = feedService.getComments(postId);
+        return ResponseEntity.ok(comments);
+    }
+
 
     @PutMapping("/comments/{commentId}")
     public ResponseEntity<Comment> editComment(@RequestAttribute("authenticatedUser") AuthenticationUser user,
@@ -90,6 +104,7 @@ public class FeedController {
         feedService.deleteComment(user.getId(), commentId);
         return ResponseEntity.noContent().build();
     }
+
 
 
 }

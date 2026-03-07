@@ -197,7 +197,7 @@ public class AuthenticationService {
         }
     }
 
-    public AuthenticationUser updateUserProfile(Long id, String firstName, String lastName, String location, String company, String position) {
+    public AuthenticationUser updateUserProfile(Long id, String firstName, String lastName, String location, String college) {
 
         Optional<AuthenticationUser> user = authenticationUserRepository.findById(id);
         if(user.isEmpty()){
@@ -213,12 +213,10 @@ public class AuthenticationService {
         if(location!=null){
             user.get().setLocation(location);
         }
-        if(company!=null){
-            user.get().setCompany(company);
+        if(college!=null){
+            user.get().setCollege(college);
         }
-        if(position!=null){
-            user.get().setPosition(position);
-        }
+
         authenticationUserRepository.save(user.get());
         return user.get();
 

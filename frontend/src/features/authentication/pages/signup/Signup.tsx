@@ -1,12 +1,11 @@
 import { useState, type SubmitEvent } from "react";
-import { Box } from "../../components/box/Box";
-import { Button } from "../../components/button/Button";
-import { Input } from "../../components/input/Input";
-import { Layout } from "../../components/layout/Layout";
-import classes from "./Signup.module.scss";
-import { Seperator } from "../../components/seperator/Seperator";
 import { Link, useNavigate } from "react-router-dom";
+import { Box } from "../../components/box/Box";
+import { Button } from "../../../../components/button/Button";
+import { Input } from "../../../../components/input/Input";
+import { Seperator } from "../../components/seperator/Seperator";
 import { useAuthentication } from "../../contexts/AuthenticationContextProvider";
+import classes from "./Signup.module.scss";
 
 export function Signup() {
   const [errorMessage, setErrorMessage] = useState("");
@@ -34,7 +33,7 @@ export function Signup() {
   };
 
   return (
-    <Layout className={classes.root}>
+    <div className={classes.root}>
       <Box>
         <h1>Sign up</h1>
         <p>Make the most of your professional life.</p>
@@ -66,9 +65,9 @@ export function Signup() {
         </form>
         <Seperator>Or</Seperator>
         <div className={classes.register}>
-          Already on Elevato? <Link to="/login">Sign in</Link>
+          Already on Elevato? <Link to="/authentication/login">Sign in</Link>
         </div>
       </Box>
-    </Layout>
+    </div>
   );
 }
