@@ -15,6 +15,7 @@ import { Network } from "./features/feed/pages/network/Network";
 import { Notifications } from "./features/feed/pages/notifications/Notifications";
 import { Feed } from "./features/feed/pages/Feed/Feed";
 import { Profile } from "./features/authentication/pages/profile/Profile";
+import { PostPage } from "./features/feed/pages/PostPage/PostPage";
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
           {
             path: "notifications",
             element: <Notifications />,
+          },
+          {
+            path: "posts/:id",
+            element: <PostPage />,
           },
         ],
       },

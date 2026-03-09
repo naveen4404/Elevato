@@ -22,11 +22,11 @@ export function LeftSideBar() {
       <div className={classes.info}>
         <div className={classes.item}>
           <div className={classes.label}>Profile viewers</div>
-          <div className={classes.value}>1,234</div>
+          <div className={classes.value}>XX</div>
         </div>
         <div className={classes.item}>
           <div className={classes.label}>Connections</div>
-          <div className={classes.value}>4,567</div>
+          <div className={classes.value}>XX</div>
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import { timeAgo } from "../../utils/date";
 import classes from "./TimeAgo.module.scss";
 interface TimeAgoProps {
   date: string;
-  edited: boolean;
+  edited?: boolean;
 }
 
 export function TimeAgo({ date, edited }: TimeAgoProps) {

@@ -44,7 +44,7 @@ public class LoadDataBaseConfiguration {
                 createUser("naveen@example.com", "abc123", "Naveen", "Gundavarapu", "Vishnu Institute of Technology",  "Bhimavaram, IN",
                         "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=3560&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
                 createUser("kumar@example.com", "abc123", "Kumar", "Sharma", "KL University",  "Vijayawada, IN",
-                        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=3687&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
+                        "https://t3.ftcdn.net/jpg/06/53/05/06/360_F_653050611_zjw73tRk6GII71af6GKgTD9VLJZ2byWm.jpg"),
                 createUser("ram@example.com", "abc123", "Ram", "Kumar", "Vishnu Institute of Technology",  "Bhimavaram, IN",
                         "https://images.unsplash.com/photo-1640960543409-dbe56ccc30e2?q=80&w=2725&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
                 createUser("john@example.com", "abc123", "John", "Doe", "KL University",  "Vijayawada, IN",
@@ -70,14 +70,195 @@ public class LoadDataBaseConfiguration {
     }
 
     private void createPosts(PostRepository postRepository, List<AuthenticationUser> users) {
+        List<String> posts = List.of("""
+Spring Boot vs Spring Framework
+Many beginners confuse Spring with Spring Boot.
+
+Spring Framework → A powerful ecosystem for building Java applications.
+Spring Boot → A tool that simplifies Spring setup with auto-configuration and starters.
+
+Example:
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+
+💡 Takeaway:
+Spring Boot removes boilerplate configuration and helps you start faster.
+#SpringBoot #Java #BackendDevelopment
+""",
+                """
+                What is Dependency Injection?
+                Dependency Injection (DI) is one of the core principles of Spring.
+                
+                Instead of creating objects manually, Spring provides them for you.
+                
+                Example without Spring:
+                UserService service = new UserService();
+                
+                Example with Spring:
+                Spring manages the object lifecycle and injects dependencies automatically.
+                
+                💡 Benefits:
+                • Loose coupling
+                • Easier testing
+                • Better maintainability
+                #SpringFramework #JavaArchitecture
+                """,
+                """
+                Spring Boot Starters Explained
+                Spring Boot starters simplify dependency management.
+                
+                Instead of adding many libraries manually, you add one starter.
+                
+                Example:
+                spring-boot-starter-web
+                
+                This includes:
+                • Spring MVC
+                • Jackson
+                • Validation
+                • Embedded Tomcat
+                
+                💡 Takeaway:
+                Starters reduce dependency conflicts and speed up development.
+                #SpringBoot #JavaDevelopers
+                """,
+                """
+                What is Auto Configuration?
+                One of the most powerful features of Spring Boot is auto-configuration.
+                
+                Spring Boot automatically configures beans based on dependencies in your project.
+                
+                Example:
+                If you add spring-boot-starter-web, Spring Boot automatically configures:
+                • DispatcherServlet
+                • Jackson
+                • Embedded Tomcat
+                
+                💡 You write less configuration and focus on business logic.
+                #SpringBoot #JavaBackend
+                """,
+                """
+                Embedded Servers in Spring Boot
+                Traditional Java apps required external servers like Tomcat.
+                
+                Spring Boot changed this.
+                
+                It comes with embedded servers such as:
+                • Tomcat
+                • Jetty
+                • Undertow
+                
+                Just run your application:
+                mvn spring-boot:run
+                
+                💡 Your application becomes a standalone executable jar.
+                #SpringBoot #BackendEngineering
+                """,
+                """
+                Understanding Spring Bean Lifecycle
+                Spring manages the lifecycle of beans.
+                
+                Main phases:
+                1. Bean Instantiation
+                2. Dependency Injection
+                3. Initialization
+                4. Bean Ready for Use
+                5. Destruction
+                
+                You can hook into the lifecycle using:
+                @PostConstruct
+                @PreDestroy
+                
+                💡 Understanding lifecycle helps debug many Spring issues.
+                #SpringFramework #Java
+                """,
+                """
+                Why Use application.properties?
+                Spring Boot uses application.properties or application.yml for configuration.
+                
+                Example:
+                server.port=8081
+                spring.application.name=demo-app
+                
+                Benefits:
+                • Environment-based configuration
+                • Clean separation from code
+                • Easy deployment configuration
+                
+                💡 Configuration should live outside the codebase.
+                #SpringBoot #DevTips
+                """,
+                """
+                Spring Boot Actuator
+                Want to monitor your application easily?
+                
+                Spring Boot Actuator provides production-ready endpoints.
+                
+                Examples:
+                /actuator/health
+                /actuator/metrics
+                /actuator/info
+                
+                Add dependency:
+                spring-boot-starter-actuator
+                
+                💡 Actuator helps with monitoring and observability.
+                #SpringBoot #DevOps
+                """,
+                """
+                REST APIs with Spring Boot
+                Spring Boot makes building REST APIs incredibly simple.
+                
+                Example:
+                @RestController
+                @RequestMapping("/users")
+                public class UserController {
+                
+                @GetMapping
+                public List<User> getUsers() {
+                    return List.of();
+                }
+                
+                }
+                
+                💡 In just a few lines, you have a REST endpoint ready.
+                #SpringBoot #RESTAPI
+                """,
+                """
+                Spring Profiles for Multiple Environments
+                Applications often run in multiple environments:
+                • Development
+                • Testing
+                • Production
+                
+                Spring Profiles allow environment-specific configurations.
+                
+                Example:
+                spring.profiles.active=dev
+                
+                You can create:
+                application-dev.properties
+                application-prod.properties
+                
+                💡 Profiles make deployments flexible and safe.
+                #SpringBoot #JavaDevelopment
+                """);
         Random random = new Random();
         for (int j = 1; j <= 10; j++) {
-            Post post = new Post("Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            Post post = new Post(posts.get(j-1),
                     users.get(random.nextInt(users.size())));
             post.setLikes(generateLikes(users, j, random));
             if (j == 1) {
-                post.setPicture("https://images.unsplash.com/photo-1731176497854-f9ea4dd52eb6?q=80&w=3432&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+                post.setPicture("https://koevoet.biz/wp-content/uploads/2020/11/Spring-BOOT.jpg");
             }
+            if(j==4){
+                post.setPicture("https://insource.io/images/posts/spring-boot.png");
+            }
+
             List<Comment> comments = generateComments(users,post);
             post.setComments(comments);
             postRepository.save(post);

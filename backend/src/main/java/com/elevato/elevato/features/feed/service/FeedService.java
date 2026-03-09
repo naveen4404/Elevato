@@ -11,6 +11,7 @@ import com.elevato.elevato.features.feed.model.Comment;
 import com.elevato.elevato.features.feed.model.Post;
 import com.elevato.elevato.features.feed.repository.CommentRepository;
 import com.elevato.elevato.features.feed.repository.PostRepository;
+import com.elevato.elevato.features.notifications.service.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,13 @@ public class FeedService {
     private final PostRepository postRepository;
     private final AuthenticationUserRepository authenticationUserRepository;
     private final CommentRepository commentRepository;
+    private final NotificationService notificationService;
 
-    public FeedService(PostRepository postRepository, AuthenticationUserRepository authenticationUserRepository, CommentRepository commentRepository) {
+    public FeedService(PostRepository postRepository, AuthenticationUserRepository authenticationUserRepository, CommentRepository commentRepository, NotificationService notificationService) {
         this.postRepository = postRepository;
         this.authenticationUserRepository = authenticationUserRepository;
         this.commentRepository = commentRepository;
+        this.notificationService = notificationService;
     }
 
     public Post createPost(Long id, PostDto post) {
@@ -84,15 +87,19 @@ public class FeedService {
             post.getLikes().remove(user);
         }else{
             post.getLikes().add(user);
+            notificationService.sendLikeNotification(user, post.getAuthor(),post.getId());
         }
+        notificationService.sendLikesToPost(post.getId(),post.getLikes());
         return postRepository.save(post);
     }
 
     public Comment addComment(Long userId, Long postId, CommentDto comment) {
         AuthenticationUser user = authenticationUserRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User not found"));
         Post post = postRepository.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post not found"));
-        Comment cmt = new Comment(post, user, comment.getContent());
-        return commentRepository.save(cmt);
+        Comment cmt =  commentRepository.save(new Comment(post, user, comment.getContent()));
+        notificationService.sendCommentNotification(user, post.getAuthor(),post.getId());
+        notificationService.sendCommentToPost(post.getId(),cmt);
+        return cmt;
     }
 
     public Comment editComment(Long userId, Long commentId, CommentDto comment) {
@@ -102,6 +109,7 @@ public class FeedService {
             throw new ForbiddenException("User is not allowed to edit this comment");
         }
         cmt.setContent(comment.getContent());
+        notificationService.sendCommentToPost(cmt.getPost().getId(),cmt);
         return commentRepository.save(cmt);
     }
 
@@ -112,6 +120,7 @@ public class FeedService {
             throw new ForbiddenException("User is not allowed to delete this comment");
         }
         commentRepository.delete(cmt);
+        notificationService.sendDeleteCommentToPost(cmt.getPost().getId(),cmt);
     }
 
     public List<Comment> getComments( Long postId) {

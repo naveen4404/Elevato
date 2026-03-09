@@ -21,7 +21,8 @@ public class AuthenticationFilter extends HttpFilter {
             "/api/v1/authentication/login",
             "/api/v1/authentication/register",
             "/api/v1/authentication/send-password-reset-token",
-            "/api/v1/authentication/reset-password"
+            "/api/v1/authentication/reset-password",
+            "/ws"
     );
 
     private final AuthenticationService authenticationService;

@@ -16,6 +16,7 @@ import classes from "./PostCard.module.scss";
 import { request } from "../../../../utils/api";
 import { Input } from "../../../../components/input/Input";
 import { Modal } from "../Modal/Modal";
+import { useWebSocket } from "../../../websocket/WsContextProvider";
 
 export interface Post {
   id: number;
@@ -41,6 +42,8 @@ export function PostCard({ post, setPosts }: PostProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [editing, setEditing] = useState(false);
   const [postLiked, setPostLiked] = useState<boolean | undefined>(undefined);
+  const WsClient = useWebSocket();
+  // API calls
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -108,20 +111,12 @@ export function PostCard({ post, setPosts }: PostProps) {
   };
 
   const like = async () => {
-    setPostLiked((prev) => !prev);
     await request<Post>({
       endpoint: `/api/v1/feed/posts/${post.id}/likes`,
       method: "PUT",
-      onSuccess: () => {
-        setLikes((prev) =>
-          postLiked
-            ? prev.filter((like) => like.id !== user?.id)
-            : [user!, ...prev],
-        );
-      },
+      onSuccess: () => {},
       onFailure: (error) => {
         console.error(error);
-        setPostLiked((prev) => !prev);
       },
     });
   };
@@ -135,10 +130,7 @@ export function PostCard({ post, setPosts }: PostProps) {
       endpoint: `/api/v1/feed/posts/${post.id}/comments`,
       method: "POST",
       body: JSON.stringify({ content }),
-      onSuccess: (data) => {
-        setComments((prev) => [data, ...prev]);
-        setContent("");
-      },
+      onSuccess: () => {},
       onFailure: (error) => {
         console.error(error);
       },
@@ -149,9 +141,7 @@ export function PostCard({ post, setPosts }: PostProps) {
     await request<void>({
       endpoint: `/api/v1/feed/comments/${id}`,
       method: "DELETE",
-      onSuccess: () => {
-        setComments((prev) => prev.filter((cmt) => cmt.id !== id));
-      },
+      onSuccess: () => {},
       onFailure: (error) => {
         console.error(error);
       },
@@ -163,22 +153,62 @@ export function PostCard({ post, setPosts }: PostProps) {
       endpoint: `/api/v1/feed/comments/${id}`,
       method: "PUT",
       body: JSON.stringify({ content }),
-      onSuccess: (data) => {
-        setComments((prev) =>
-          prev.map((c) => {
-            if (c.id === id) {
-              return data;
-            }
-            return c;
-          }),
-        );
-      },
+      onSuccess: () => {},
       onFailure: (error) => {
         console.error(error);
       },
     });
   };
 
+  // Subcriptions for realtime updates
+
+  // send comment to post
+  useEffect(() => {
+    const subscription = WsClient?.subscribe(
+      `/topic/comments/${post?.id}`,
+      (message) => {
+        const cmt: Comment = JSON.parse(message.body);
+        setComments((prev) => {
+          const index = prev.findIndex((comment) => comment.id === cmt.id);
+          if (index === -1) {
+            return [cmt, ...prev];
+          }
+          return prev.map((comment) => (comment.id === cmt.id ? cmt : comment));
+        });
+      },
+    );
+
+    return () => subscription?.unsubscribe();
+  }, [post?.id, WsClient]);
+
+  // delete comment
+  useEffect(() => {
+    const subscription = WsClient?.subscribe(
+      `/topic/comments/${post?.id}/delete`,
+      (message) => {
+        const cmt: Comment = JSON.parse(message.body);
+        setComments((prev) => {
+          return prev.filter((comment) => comment.id !== cmt.id);
+        });
+      },
+    );
+
+    return () => subscription?.unsubscribe();
+  }, [post?.id, WsClient]);
+
+  // like comment
+  useEffect(() => {
+    const subscription = WsClient?.subscribe(
+      `/topic/likes/${post?.id}`,
+      (message) => {
+        const likes: User[] = JSON.parse(message.body);
+        setLikes(likes);
+        setPostLiked(likes.some((like) => like.id === user?.id));
+      },
+    );
+
+    return () => subscription?.unsubscribe();
+  }, [post?.id, WsClient, user?.id]);
   return (
     <>
       {editing ? (

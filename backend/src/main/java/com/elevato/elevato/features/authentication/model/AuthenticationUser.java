@@ -1,5 +1,6 @@
 package com.elevato.elevato.features.authentication.model;
 
+import com.elevato.elevato.features.notifications.model.Notification;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.elevato.elevato.features.feed.model.Comment;
 import com.elevato.elevato.features.feed.model.Post;
@@ -51,6 +52,22 @@ public class AuthenticationUser {
             orphanRemoval = true
     )
     private List<Comment> comments;
+
+    @JsonIgnore
+    @OneToMany(
+            mappedBy = "recipient",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Notification> receivedNotifications;
+
+    @JsonIgnore
+    @OneToMany(
+            mappedBy = "actor",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Notification> actedNotifications;
 
     public AuthenticationUser() {
     }
@@ -195,5 +212,21 @@ public class AuthenticationUser {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    public List<Notification> getReceivedNotifications() {
+        return receivedNotifications;
+    }
+
+    public void setReceivedNotifications(List<Notification> receivedNotifications) {
+        this.receivedNotifications = receivedNotifications;
+    }
+
+    public List<Notification> getActedNotifications() {
+        return actedNotifications;
+    }
+
+    public void setActedNotifications(List<Notification> actedNotifications) {
+        this.actedNotifications = actedNotifications;
     }
 }

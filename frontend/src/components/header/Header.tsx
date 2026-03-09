@@ -4,13 +4,22 @@ import { Input } from "../input/Input";
 import { useAuthentication } from "../../features/authentication/contexts/AuthenticationContextProvider";
 import { useEffect, useState } from "react";
 import { Profile } from "./components/profile/Profile";
+import { useWebSocket } from "../../features/websocket/WsContextProvider";
+import type { Notification } from "../../features/feed/pages/notifications/Notifications";
+import { request } from "../../utils/api";
 
 export function Header() {
   const { user } = useAuthentication();
+  const WsClient = useWebSocket();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNavigationMenu, setShowNavigationMenu] = useState(
     window.innerWidth > 1080 ? true : false,
   );
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  const nonReadNotificationCount = notifications.reduce((acc, notification) => {
+    return notification.read ? acc + 0 : acc + 1;
+  }, 0);
 
   useEffect(() => {
     const handleResize = () => {
@@ -26,6 +35,31 @@ export function Header() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    request<Notification[]>({
+      endpoint: "/api/v1/notifications",
+      onSuccess: setNotifications,
+      onFailure: (error) => console.log(error),
+    });
+  }, []);
+
+  useEffect(() => {
+    const subscribtion = WsClient?.subscribe(
+      `/topic/users/${user?.id}/notifications`,
+      (message) => {
+        const notification = JSON.parse(message.body);
+        setNotifications((prev) => {
+          const index = prev.findIndex((nt) => nt.id === notification.id);
+          if (index === -1) {
+            return [notification, ...prev];
+          }
+          return prev.map((n) => (n.id === notification.id ? notification : n));
+        });
+      },
+    );
+    return () => subscribtion?.unsubscribe();
+  }, [user?.id, WsClient]);
 
   return (
     <header className={classes.root}>
@@ -118,7 +152,7 @@ export function Header() {
                   <span>Messaging</span>
                 </NavLink>
               </li>
-              <li>
+              <li className={classes.notifications}>
                 <NavLink
                   onClick={() => {
                     setShowProfileMenu(false);
@@ -140,7 +174,14 @@ export function Header() {
                       d="M4 8a8 8 0 1 1 16 0v4.697l2 3V20h-5.611a4.502 4.502 0 0 1-8.777 0H2v-4.303l2-3V8Zm5.708 12a2.5 2.5 0 0 0 4.584 0H9.708ZM12 2a6 6 0 0 0-6 6v5.303l-2 3V18h16v-1.697l-2-3V8a6 6 0 0 0-6-6Z"
                     />
                   </svg>
-                  <span>Notications</span>
+                  <div>
+                    {nonReadNotificationCount > 0 ? (
+                      <span className={classes.badge}>
+                        {nonReadNotificationCount}
+                      </span>
+                    ) : null}
+                    <span>Notications</span>
+                  </div>
                 </NavLink>
               </li>
             </ul>
