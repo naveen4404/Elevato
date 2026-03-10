@@ -232,4 +232,8 @@ public class AuthenticationService {
             entityManager.remove(user);
         }
     }
+
+    public AuthenticationUser getUserById(Long userId){
+        return authenticationUserRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User not found"));
+    }
 }

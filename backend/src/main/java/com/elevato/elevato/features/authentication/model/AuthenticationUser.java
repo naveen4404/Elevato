@@ -1,5 +1,6 @@
 package com.elevato.elevato.features.authentication.model;
 
+import com.elevato.elevato.features.messaging.model.Conversation;
 import com.elevato.elevato.features.notifications.model.Notification;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.elevato.elevato.features.feed.model.Comment;
@@ -68,6 +69,22 @@ public class AuthenticationUser {
             orphanRemoval = true
     )
     private List<Notification> actedNotifications;
+
+    @JsonIgnore
+    @OneToMany(
+            mappedBy = "author",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Conversation> conversationsAsAuthor;
+
+    @JsonIgnore
+    @OneToMany(
+            mappedBy = "recipient",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Conversation> conversationsAsRecipient;
 
     public AuthenticationUser() {
     }
@@ -228,5 +245,21 @@ public class AuthenticationUser {
 
     public void setActedNotifications(List<Notification> actedNotifications) {
         this.actedNotifications = actedNotifications;
+    }
+
+    public List<Conversation> getConversationsAsAuthor() {
+        return conversationsAsAuthor;
+    }
+
+    public void setConversationsAsAuthor(List<Conversation> conversationsAsAuthor) {
+        this.conversationsAsAuthor = conversationsAsAuthor;
+    }
+
+    public List<Conversation> getConversationsAsRecipient() {
+        return conversationsAsRecipient;
+    }
+
+    public void setConversationsAsRecipient(List<Conversation> conversationsAsRecipient) {
+        this.conversationsAsRecipient = conversationsAsRecipient;
     }
 }

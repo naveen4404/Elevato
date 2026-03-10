@@ -3,6 +3,8 @@ package com.elevato.elevato.features.notifications.service;
 import com.elevato.elevato.exception.ResourceNotFoundException;
 import com.elevato.elevato.features.authentication.model.AuthenticationUser;
 import com.elevato.elevato.features.feed.model.Comment;
+import com.elevato.elevato.features.messaging.model.Conversation;
+import com.elevato.elevato.features.messaging.model.Message;
 import com.elevato.elevato.features.notifications.model.Notification;
 import com.elevato.elevato.features.notifications.model.NotificationType;
 import com.elevato.elevato.features.notifications.repository.NotificationRepository;
@@ -63,5 +65,14 @@ public class NotificationService {
 
     public void sendDeleteCommentToPost(Long postId, Comment comment){
         messagingTemplate.convertAndSend("/topic/comments/"+postId+"/delete",comment);
+    }
+
+    public void sendConversationToUsers(Long senderId, Long receiverId, Conversation conversation) {
+        messagingTemplate.convertAndSend("/topic/users/"+senderId+"/coversations",conversation);
+        messagingTemplate.convertAndSend("/topic/users/"+receiverId+"/coversations",conversation);
+    }
+
+    public void sendMessageToConversation(Long conversationId, Message message) {
+        messagingTemplate.convertAndSend("/topic/conversations/"+conversationId+"/messages", message);
     }
 }
