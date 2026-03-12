@@ -6,7 +6,9 @@ import { Input } from "../../../../components/input/Input";
 import classes from "./EmailVerification.module.scss";
 import { request } from "../../../../utils/api";
 import { useAuthentication } from "../../contexts/AuthenticationContextProvider";
+import { usePageTitle } from "../../../../hooks/usePageTitle";
 export function EmailVerification() {
+  usePageTitle("Verify Email");
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);

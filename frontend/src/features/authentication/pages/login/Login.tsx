@@ -6,8 +6,10 @@ import { Input } from "../../../../components/input/Input";
 import { Seperator } from "../../components/seperator/Seperator";
 import { useAuthentication } from "../../contexts/AuthenticationContextProvider";
 import classes from "./Login.module.scss";
+import { usePageTitle } from "../../../../hooks/usePageTitle";
 
 export function Login() {
+  usePageTitle("Login");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();

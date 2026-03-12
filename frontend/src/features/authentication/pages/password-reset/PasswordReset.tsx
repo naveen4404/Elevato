@@ -4,8 +4,10 @@ import { Box } from "../../components/box/Box";
 import { Button } from "../../../../components/button/Button";
 import { Input } from "../../../../components/input/Input";
 import { request } from "../../../../utils/api";
+import { usePageTitle } from "../../../../hooks/usePageTitle";
 
 export function PasswordReset() {
+  usePageTitle("Reset password");
   const navigate = useNavigate();
   const [emailSent, setEmailSent] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");

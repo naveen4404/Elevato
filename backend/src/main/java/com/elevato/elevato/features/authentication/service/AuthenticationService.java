@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -235,5 +236,9 @@ public class AuthenticationService {
 
     public AuthenticationUser getUserById(Long userId){
         return authenticationUserRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User not found"));
+    }
+
+    public List<AuthenticationUser> getUsers(Long id) {
+        return authenticationUserRepository.findByIdNot(id);
     }
 }

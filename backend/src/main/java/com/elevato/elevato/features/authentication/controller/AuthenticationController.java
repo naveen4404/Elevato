@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/authentication")
@@ -30,6 +31,11 @@ public class AuthenticationController {
     @GetMapping("/user")
     public  AuthenticationUser getUser(@RequestAttribute("authenticatedUser") AuthenticationUser user){
         return user;
+    }
+
+    @GetMapping("/users")
+    public List<AuthenticationUser> getUsers(@RequestAttribute("authenticatedUser") AuthenticationUser user){
+        return authenticationService.getUsers(user.getId());
     }
 
     @DeleteMapping("/user")

@@ -1,24 +1,36 @@
-import { NavLink } from "react-router-dom";
-import classes from "./Header.module.scss";
-import { Input } from "../input/Input";
-import { useAuthentication } from "../../features/authentication/contexts/AuthenticationContextProvider";
 import { useEffect, useState } from "react";
-import { Profile } from "./components/profile/Profile";
-import { useWebSocket } from "../../features/websocket/WsContextProvider";
+import { NavLink, useLocation } from "react-router-dom";
+import { useAuthentication } from "../../features/authentication/contexts/AuthenticationContextProvider";
 import type { Notification } from "../../features/feed/pages/notifications/Notifications";
+import type { CoversationInterface } from "../../features/messaging/components/conversations/Conversations";
+import { useWebSocket } from "../../features/websocket/WsContextProvider";
 import { request } from "../../utils/api";
+import { Input } from "../input/Input";
+import { Profile } from "./components/profile/Profile";
+import classes from "./Header.module.scss";
 
 export function Header() {
   const { user } = useAuthentication();
   const WsClient = useWebSocket();
+  const location = useLocation();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNavigationMenu, setShowNavigationMenu] = useState(
     window.innerWidth > 1080 ? true : false,
   );
   const [notifications, setNotifications] = useState<Notification[]>([]);
-
+  const [conversations, setConversations] = useState<CoversationInterface[]>(
+    [],
+  );
   const nonReadNotificationCount = notifications.reduce((acc, notification) => {
     return notification.read ? acc + 0 : acc + 1;
+  }, 0);
+
+  const nonReadMessages = conversations.reduce((total, conversation) => {
+    const unread = conversation.messages.reduce((acc, message) => {
+      return acc + (message.receiver.id === user?.id && !message.read ? 1 : 0);
+    }, 0);
+
+    return unread + total;
   }, 0);
 
   useEffect(() => {
@@ -59,6 +71,44 @@ export function Header() {
       },
     );
     return () => subscribtion?.unsubscribe();
+  }, [user?.id, WsClient]);
+
+  useEffect(() => {
+    request<CoversationInterface[]>({
+      endpoint: "/api/v1/messaging/conversations",
+      method: "GET",
+      onSuccess: (data) => {
+        setConversations(data);
+      },
+      onFailure: (message) => {
+        console.error(message);
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    const subscription = WsClient?.subscribe(
+      "/topic/users/" + user?.id + "/conversations",
+      (data) => {
+        const conversation: CoversationInterface = JSON.parse(data.body);
+        // console.log(conversation);
+        setConversations((prevConversations) => {
+          console.log(conversation);
+          const index = prevConversations.findIndex(
+            (c) => c.id === conversation.id,
+          );
+          if (index === -1) {
+            return [conversation, ...prevConversations];
+          }
+
+          return prevConversations.map((c) =>
+            c.id === conversation.id ? conversation : c,
+          );
+        });
+      },
+    );
+
+    return () => subscription?.unsubscribe();
   }, [user?.id, WsClient]);
 
   return (
@@ -123,7 +173,7 @@ export function Header() {
                   <span>Network</span>
                 </NavLink>
               </li>
-              <li>
+              <li className={classes.messaging}>
                 <NavLink
                   onClick={() => {
                     setShowProfileMenu(false);
@@ -149,7 +199,13 @@ export function Header() {
                       />
                     </g>
                   </svg>
-                  <span>Messaging</span>
+                  <div>
+                    {nonReadMessages > 0 &&
+                    !location.pathname.includes("messaging") ? (
+                      <span className={classes.badge}>{nonReadMessages}</span>
+                    ) : null}
+                    <span>Messaging</span>
+                  </div>
                 </NavLink>
               </li>
               <li className={classes.notifications}>

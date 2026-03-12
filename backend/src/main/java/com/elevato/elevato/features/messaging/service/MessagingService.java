@@ -53,6 +53,10 @@ public class MessagingService {
 
     public Conversation createConversationAndMessage(AuthenticationUser sender, Long receiverId, String content) {
 
+        if(content.isBlank()){
+            throw new BadRequestException("There must be content in the message");
+        }
+
         AuthenticationUser receiver = authenticationService.getUserById(receiverId);
         conversationRepository.findByAuthorAndRecipient(sender, receiver)
                 .ifPresentOrElse((conversation)-> {
@@ -73,6 +77,11 @@ public class MessagingService {
     }
 
     public Message addMessageToConversation(AuthenticationUser sender, Long receiverId, String content, Long conversationId) {
+
+        if(content.isBlank()){
+            throw new BadRequestException("There must be content in the message");
+        }
+
         AuthenticationUser receiver = authenticationService.getUserById(receiverId);
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(
@@ -85,6 +94,7 @@ public class MessagingService {
         if (!conversation.getAuthor().getId().equals(receiver.getId()) && !conversation.getRecipient().getId().equals(receiver.getId())) {
             throw new IllegalArgumentException("Receiver is not part of this conversation");
         }
+
 
 
         Message message = new Message(sender, receiver, conversation, content);
@@ -109,6 +119,6 @@ public class MessagingService {
             message.setRead(true);
             messageRepository.save(message);
         }
-
+        notificationService.sendMessageToConversation(message.getConversation().getId(), message);
     }
 }

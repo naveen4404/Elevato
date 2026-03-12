@@ -10,12 +10,14 @@ import { PasswordReset } from "./features/authentication/pages/password-reset/Pa
 import { AuthenticationContextProvider } from "./features/authentication/contexts/AuthenticationContextProvider";
 import { AuthenticationLayout } from "./features/authentication/components/AuthenticationLayout/AuthenticationLayout";
 import { ApplicationLayout } from "./components/ApplicationLayout/ApplicationLayout";
-import { Messaging } from "./features/feed/pages/messaging/Messaging";
+
 import { Network } from "./features/feed/pages/network/Network";
 import { Notifications } from "./features/feed/pages/notifications/Notifications";
 import { Feed } from "./features/feed/pages/Feed/Feed";
 import { Profile } from "./features/authentication/pages/profile/Profile";
 import { PostPage } from "./features/feed/pages/PostPage/PostPage";
+import { Messaging } from "./features/messaging/pages/Messaging/Messaging";
+import { ConversationWindow } from "./features/messaging/pages/ConversationPage/ConversationWindow";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +34,12 @@ const router = createBrowserRouter([
           {
             path: "messaging",
             element: <Messaging />,
+            children: [
+              {
+                path: "conversations/:id",
+                element: <ConversationWindow />,
+              },
+            ],
           },
           {
             path: "network",

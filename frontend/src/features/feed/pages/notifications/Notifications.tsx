@@ -10,6 +10,7 @@ import { RightSideBar } from "../../components/RightSideBar/RightSideBar";
 import { useNavigate } from "react-router-dom";
 import { TimeAgo } from "../../components/TimeAgo/TimeAgo";
 import { useWebSocket } from "../../../websocket/WsContextProvider";
+import { usePageTitle } from "../../../../hooks/usePageTitle";
 
 type NotificationType = "LIKE" | "COMMENT";
 
@@ -24,6 +25,7 @@ export interface Notification {
 }
 
 export function Notifications() {
+  usePageTitle("Notifications");
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const WsClient = useWebSocket();
   const { user } = useAuthentication();

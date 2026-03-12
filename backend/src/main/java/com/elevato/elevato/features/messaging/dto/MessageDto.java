@@ -1,8 +1,16 @@
 package com.elevato.elevato.features.messaging.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.Length;
+
 public class MessageDto {
 
+    @NotNull
     private String content;
+
+    @NotNull
     private Long receiverId;
 
     public MessageDto() {

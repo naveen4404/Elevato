@@ -1,0 +1,65 @@
+.root {
+  width: 60%;
+
+  .message {
+    border-radius: 0 0.5rem 0.5rem;
+    padding: 0.35rem 0.6rem;
+    background-color: #f0f0f0;
+
+    .top {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.68rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .time {
+      opacity: 0.5;
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+      color: inherit;
+    }
+
+    .avatar {
+      width: 1.1rem;
+      height: 1.1rem;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .name {
+      font-weight: 600;
+      font-size: 0.7rem;
+    }
+
+    .body {
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+  }
+
+  &.sent {
+    margin-left: auto;
+
+    .message {
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 0.5rem 0 0.5rem 0.5rem;
+    }
+  }
+
+  .status {
+    display: flex;
+    gap: 0.25rem;
+    font-size: 0.6rem;
+    color: #bbb;
+    align-items: center;
+    margin-top: 0.1rem;
+
+    svg {
+      width: 0.75em;
+      height: 0.75em;
+    }
+  }
+}

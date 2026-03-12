@@ -8,8 +8,10 @@ import { Button } from "../../../../components/button/Button";
 import { PostCard, type Post } from "../../components/Post/PostCard";
 import { Modal } from "../../components/Modal/Modal";
 import { request } from "../../../../utils/api";
+import { usePageTitle } from "../../../../hooks/usePageTitle";
 
 export function Feed() {
+  usePageTitle("Home");
   const navigate = useNavigate();
   const { user } = useAuthentication();
   const [showPostingModal, setShowPostingModal] = useState(false);

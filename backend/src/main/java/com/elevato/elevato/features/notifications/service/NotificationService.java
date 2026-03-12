@@ -68,8 +68,8 @@ public class NotificationService {
     }
 
     public void sendConversationToUsers(Long senderId, Long receiverId, Conversation conversation) {
-        messagingTemplate.convertAndSend("/topic/users/"+senderId+"/coversations",conversation);
-        messagingTemplate.convertAndSend("/topic/users/"+receiverId+"/coversations",conversation);
+        messagingTemplate.convertAndSend("/topic/users/"+senderId+"/conversations",conversation);
+        messagingTemplate.convertAndSend("/topic/users/"+receiverId+"/conversations",conversation);
     }
 
     public void sendMessageToConversation(Long conversationId, Message message) {
